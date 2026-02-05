@@ -11,7 +11,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Widgets WaylandClient)
 
 qt_add_executable(FedoraWallpaper
     src/main.cpp
@@ -25,4 +25,5 @@ target_link_libraries(FedoraWallpaper PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::Widgets
+    Qt6::WaylandClient
 )
