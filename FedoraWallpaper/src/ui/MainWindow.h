@@ -12,12 +12,11 @@ public:
     ~MainWindow();
 
 protected:
-    // Event triggered when window appears
     void showEvent(QShowEvent *event) override;
 
 private slots:
-    // Function to force window to bottom layer
     void pushToBottom();
+    void updateMonitors(); // <--- NEW: Handles screen changes
 
 private:
     void setupUI();
