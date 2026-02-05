@@ -12,53 +12,49 @@ layout(std140, binding = 0) uniform buf {
 };
 
 void main() {
-    // 1. Setup Coordinates
     vec2 uv = qt_TexCoord0;
     
-    // Fix aspect ratio so waves aren't stretched
+    // Aspect Ratio Fix
     float aspect = resolution.x / resolution.y;
-    vec2 p = uv * 6.0; // Zoom out a bit (higher number = see more waves)
+    vec2 p = uv * 6.0; 
     p.x *= aspect;
 
-    // 2. Mouse Interaction (Soft & Subtle)
-    // We gently push the water pattern based on mouse position
+    // Mouse Interaction
     vec2 m = mouse;
     m.x *= aspect;
-    p += (m - p) * 0.05; // Very subtle warping towards mouse
+    p += (m - p) * 0.03; 
 
-    // 3. Iterative Wave Generation (The "Pleasant" part)
-    // Instead of sharp lines, we loop and add sine waves on top of each other
-    // This creates that "oil on water" or "swimming pool" look.
-    float brightness = 1.0;
-    float speed = time * 0.5; // Slow, relaxing speed
+    float speed = time * 0.1;
 
-    for(int i = 1; i <= 4; i++) {
-        // This magic math distorts the coordinates in a loop
-        // It creates complex, organic shapes from simple sine waves
+    // Efficient 3-iteration loop
+    for(int i = 1; i <= 3; i++) {
         float n = float(i);
-        p.x += 0.6 / n * sin(n * p.y + speed + 0.3 * n);
-        p.y += 0.6 / n * cos(n * p.x + speed + 0.3 * n + 1.5);
+        vec2 d = vec2(sin(n * p.y + speed + 0.3 * n), cos(n * p.x + speed + 0.3 * n + 1.5));
+        p += 0.6 / n * d;
     }
 
-    // 4. Color Mapping
-    // We use the distorted coordinates to pick colors
-    // r = wave height, g = wave depth, b = constant blue base
-    
-    // Base Deep Blue
-    vec3 deepWater = vec3(0.05, 0.2, 0.5);
-    
-    // Tropical Teal/Cyan Highlight
-    vec3 tropical = vec3(0.0, 0.6, 0.8);
-    
-    // Calculate the wave intensity (0.0 to 1.0)
-    float waveIntensity = sin(p.x + p.y) * 0.5 + 0.5;
+    // Calculate Wave Height
+    float wave = sin(p.x + p.y);
+    float intensity = wave * 0.5 + 0.5;
 
-    // Mix the colors smoothly
-    vec3 finalColor = mix(deepWater, tropical, waveIntensity);
+    // --- COLOR PALETTE ---
     
-    // Add a little extra brightness to the peaks (sunlight sparkles)
-    finalColor += vec3(0.1, 0.1, 0.2) * pow(waveIntensity, 4.0);
+    // 1. Base Colors (Black -> Deep Blue)
+    vec3 blackBase = vec3(0.0, 0.01, 0.03); 
+    vec3 darkBlue = vec3(0.05, 0.15, 0.4);
+    
+    vec3 color = mix(blackBase, darkBlue, intensity * 0.8);
+    
+    // --- THE FIX IS HERE ---
+    
+    // 4. Highlights (Cyan instead of White)
+    // We use high power (12.0) for sharp peaks.
+    float sparkle = pow(intensity, 12.0);
+    
+    // CHANGED: Use a dark Cyan vector instead of bright white.
+    // Low Red (0.02), Medium Green (0.3), Med-High Blue (0.4)
+    // This makes it look like moody moonlight on dark water.
+    color += vec3(0.02, 0.3, 0.4) * sparkle;
 
-    // 5. Output
-    fragColor = vec4(finalColor * qt_Opacity, 1.0);
+    fragColor = vec4(color * qt_Opacity, 1.0);
 }
