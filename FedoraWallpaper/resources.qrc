@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/qml/Main.qml</file>
+        <file>assets/shaders/water.frag</file>
+    </qresource>
+</RCC>
