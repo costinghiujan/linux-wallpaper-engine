@@ -24,7 +24,7 @@ void main() {
     m.x *= aspect;
     p += (m - p) * 0.03; 
 
-    float speed = time * 0.1;
+    float speed = time * 0.3;
 
     // Efficient 3-iteration loop
     for(int i = 1; i <= 3; i++) {
@@ -38,22 +38,13 @@ void main() {
     float intensity = wave * 0.5 + 0.5;
 
     // --- COLOR PALETTE ---
-    
-    // 1. Base Colors (Black -> Deep Blue)
     vec3 blackBase = vec3(0.0, 0.01, 0.03); 
     vec3 darkBlue = vec3(0.05, 0.15, 0.4);
     
     vec3 color = mix(blackBase, darkBlue, intensity * 0.8);
     
-    // --- THE FIX IS HERE ---
-    
-    // 4. Highlights (Cyan instead of White)
-    // We use high power (12.0) for sharp peaks.
+    // Highlights (Cyan)
     float sparkle = pow(intensity, 12.0);
-    
-    // CHANGED: Use a dark Cyan vector instead of bright white.
-    // Low Red (0.02), Medium Green (0.3), Med-High Blue (0.4)
-    // This makes it look like moody moonlight on dark water.
     color += vec3(0.02, 0.3, 0.4) * sparkle;
 
     fragColor = vec4(color * qt_Opacity, 1.0);
